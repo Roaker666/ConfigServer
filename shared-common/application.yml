@@ -1,0 +1,16 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: http://admin:123456@localhost:8761/eureka
+    healthcheck:
+      enabled: true
+    refresh:
+      #默认可刷新，当刷新时，该客户端会从服务端移除，导致一小段时间不可用
+      enable: true
+  instance:
+    status-page-url-path: ${server.servlet.context-path}/info
+    health-check-url-path: ${server.servlet.context-path}/health
+    #默认30秒，一个服务突然不可用到被发现需要实例、服务端、和客服端都有相同的元数据缓存，大约需要3倍的心跳检测时间
+    #A发现B不可用，需要B->S的心跳超时；A->B的心跳检测；负载均衡内部缓存过期；S内部的缓存失效；
+    #当然减少后会加速检测但是也会有一定的消耗
+    lease-expiration-duration-in-seconds: 10
