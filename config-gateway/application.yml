@@ -1,4 +1,8 @@
 spring:
+  redis:
+    database: 0
+    host: 112.74.29.66
+    port: 6379
   cloud:
     gateway:
       default-filters:
