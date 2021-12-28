@@ -14,3 +14,42 @@ eureka:
     #A发现B不可用，需要B->S的心跳超时；A->B的心跳检测；负载均衡内部缓存过期；S内部的缓存失效；
     #当然减少后会加速检测但是也会有一定的消耗
     lease-expiration-duration-in-seconds: 10
+resilience4j:
+  circuitbreaker:
+    configs:
+      registerHealthIndicator: true
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 2
+    instances:
+      book-service:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowType: TIME_BASED
+  #      recordFailurePredicate: io.github.robwin.exception.RecordFailurePredicate
+  timelimiter:
+    configs:
+      timeoutDurtion: 2s
+      cancelRunningFuture: true
+  thread-pool-bulkhead:
+    instances:
+      book-service:
+        maxThreadPoolSize: 2
+        coreThreadPoolSize: 1
+      rating-service:
+        maxCurrentCalls: 2
+feign:
+  circuitbreaker:
+    enabled: true
+  client:
+    config:
+      connectTimeout: 5000
+      readTimeout: 5000
+      loggerLevel: full
+      errorDecoder: feign.codec.ErrorDecoder.Default
+      retryer: feign.Retryer.Default
+      decode404: false
+      encoder: feign.codec.Encoder.Default
+      decoder: feign.codec.Encoder.Default
+      contract: feign.Contract.Default
+      metrics.enabled: true
