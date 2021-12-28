@@ -1,0 +1,60 @@
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - AddResponseHeader=X-Response-Default-Red,Default-Blue
+        #原主机头是否应该转发
+        - PreserveHostHeader
+        #限流
+        - name: RequestRateLimiter
+          args:
+            key-resolver: "#{@myKeyResolver}"
+            #每秒多少请求
+            redis-rate-limiter.replenishRate: 1
+            #限流桶空闲时可以持有的token数，这样有突发流量进来会优先使用这里的token
+            redis-rate-limiter.burstCapacity: 2
+            #每个请求消耗的token数
+            redis-rate-limiter.requestedTokens: 1
+        #熔断
+        - name: CircuitBreaker
+          args:
+            name: myCircuitBreaker
+            fallbackUri: forward:/fallback
+            #也可以通过状态码触发该断路器
+            statusCodes:
+              - 500
+              - "NOT_FOUND"
+              - 404
+        #重试
+        - name: Retry
+          args:
+            retries: 3
+            statuses: BAD_GATEWAY
+            methods: GET
+            series: BAD_REQUEST,INTERNAL_SERVER_ERROR,REQUEST_TIMEOUT,GATEWAY_TIMEOUT
+            backoff:
+              firstBackoff: 10ms
+              maxBackoff: 50ms
+              factor: 2
+              basedOnPreviousValue: true
+      filter:
+        request-rate-limiter:
+          deny-empty-key: true
+          empty-key-status-code: 403
+      x-forwarded:
+        enabled: true
+        for-enabled: true
+        host-enabled: true
+        port-enabled: true
+        proto-enabled: true
+        prefix-enabled: true
+      #路由监控
+      metrics:
+        enabled: true
+      httpclient:
+        connect-timeout: 1000
+        response-timeout: 3s
+      discovery:
+        locator:
+          #基于注册中心生成路由
+          enabled: true
