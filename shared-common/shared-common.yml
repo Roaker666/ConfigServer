@@ -24,9 +24,10 @@ resilience4j:
         slidingWindowType: TIME_BASED
   #      recordFailurePredicate: io.github.robwin.exception.RecordFailurePredicate
   timelimiter:
-    configs:
-      timeoutDurtion: 2s
-      cancelRunningFuture: true
+    instances:
+      book-service:
+        timeoutDurtion: 2s
+        cancelRunningFuture: true
   thread-pool-bulkhead:
     instances:
       book-service:
