@@ -40,13 +40,14 @@ feign:
     enabled: true
   client:
     config:
-      connectTimeout: 5000
-      readTimeout: 5000
-      loggerLevel: full
-      errorDecoder: feign.codec.ErrorDecoder.Default
-      retryer: feign.Retryer.Default
-      decode404: false
-      encoder: feign.codec.Encoder.Default
-      decoder: feign.codec.Encoder.Default
-      contract: feign.Contract.Default
-      metrics.enabled: true
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
+        errorDecoder: feign.codec.ErrorDecoder.Default
+        retryer: feign.Retryer.Default
+        decode404: false
+        encoder: feign.codec.Encoder.Default
+        decoder: feign.codec.Encoder.Default
+        contract: feign.Contract.Default
+        metrics.enabled: true
